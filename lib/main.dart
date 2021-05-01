@@ -11,9 +11,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Pokeddex',
       theme: ThemeData(
-      
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.red, 
+          scaffoldBackgroundColor: Colors.red),
       home: MyHomePage(),
     );
   }
@@ -22,8 +21,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-    );
+    return Scaffold(appBar: AppBar(title: Text("Pokedex")));
   }
 }
