@@ -35,34 +35,41 @@ class PokeList extends StatefulWidget {
 }
 
 class _PokeListState extends State<PokeList> {
-  List<String> pokemonList = [];
-
-  void getPokemon() async {
+  Future<List<String>> getPokemon() async {
+    List<String> pokemonList = [];
     final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=898');
     http.Response request = await http.get(url);
-    dynamic response = jsonDecode(request.body);
+    Map response = json.decode(request.body);
 
-    const pokemons = 898;
+    for (var pokemon in response['results']) {
+      String pokemonName = pokemon['name'];
 
-    for (int i = 0; i < pokemons; i++) {
-      String pokemon = response['results'][i]['name'];
-      pokemonList.add(pokemon);
+      pokemonList.add(pokemonName);
     }
+
+    return pokemonList;
   }
 
   @override
   Widget build(BuildContext context) {
-    getPokemon();
     return Container(
-        child: ListView.builder(
-      itemCount: 898,
-      itemBuilder: (context, index) {
-        return ListTile(
-            title: Text(
-          '#${index + 1}  ${pokemonList[index]}',
-          textScaleFactor: 1.5,
-          style: TextStyle(color: Colors.white),
-        ));
+        child: FutureBuilder(
+      future: getPokemon(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                    title: Text(
+                  '#${index + 1} ${snapshot.data[index]}',
+                  textScaleFactor: 1.5,
+                  style: TextStyle(color: Colors.white),
+                ));
+              });
+        } else {
+          return CircularProgressIndicator();
+        }
       },
     ));
   }
