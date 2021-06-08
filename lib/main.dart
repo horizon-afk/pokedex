@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'pokeinfo.dart';
+import 'pokemon.dart';
 
 void main() {
   runApp(MyApp());
@@ -61,11 +63,16 @@ class _PokeListState extends State<PokeList> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                    title: Text(
-                  '#${index + 1} ${snapshot.data[index]}',
-                  textScaleFactor: 1.5,
-                  style: TextStyle(color: Colors.white),
-                ));
+                  title: Text(
+                    '#${index + 1} ${snapshot.data[index]}',
+                    textScaleFactor: 1.5,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => PokeInfo()));
+                  },
+                );
               });
         } else {
           return CircularProgressIndicator();
