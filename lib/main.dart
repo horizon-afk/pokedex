@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'pokeinfo.dart';
-import 'pokemon.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,8 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Pokeddex',
-      theme: ThemeData(
-          primarySwatch: Colors.red, scaffoldBackgroundColor: Colors.red),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: MyHomePage(),
     );
   }
@@ -25,7 +23,13 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Pokedex")),
+      // backgroundColor: Colors.blue[700],
+      appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Text(
+            "Pokedex",
+            style: TextStyle(color: Colors.black),
+          )),
       body: PokeList(),
     );
   }
@@ -62,20 +66,29 @@ class _PokeListState extends State<PokeList> {
           return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    '#${index + 1} ${snapshot.data[index]}',
-                    textScaleFactor: 1.5,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => PokeInfo()));
-                  },
-                );
+                return Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.white70, width: 1),
+                        borderRadius: BorderRadius.circular(15.0)),
+                    child: Container(
+                        child: ListTile(
+                      title: Text(
+                        '#${index + 1} ${snapshot.data[index]}',
+                        textScaleFactor: 1.5,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PokeInfo(snapshot.data[index])));
+                      },
+                    )));
               });
         } else {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
       },
     ));
