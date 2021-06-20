@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
-
 class Pokemon {
   final int index;
   final String name;
   final String type;
   final String description;
-  final Image image;
+  final String image;
   final int height;
   final int weight;
 
