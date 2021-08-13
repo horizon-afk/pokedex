@@ -67,25 +67,25 @@ class _PokeListState extends State<PokeList> {
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
                 return Card(
-                    elevation: 0,
+                    elevation: 2,
                     shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.white70, width: 1),
-                        borderRadius: BorderRadius.circular(15.0)),
+                        side: BorderSide(color: Colors.black12, width: 1), borderRadius: BorderRadius.circular(15.0)),
                     child: Container(
-                        child: ListTile(
-                      title: Text(
-                        '#${index + 1} ${snapshot.data[index]}',
-                        textScaleFactor: 1.5,
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    PokeInfo(snapshot.data[index])));
-                      },
-                    )));
+                        child: InkWell(
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              Navigator.push(
+                                  context, MaterialPageRoute(builder: (context) => PokeInfo(snapshot.data[index])));
+                            },
+                            child: ListTile(
+                              title: Text(
+                                '#${index + 1} ${snapshot.data[index]}',
+                                textScaleFactor: 1.5,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              onTap: null,
+                            ))));
               });
         } else {
           return Center(child: CircularProgressIndicator());
