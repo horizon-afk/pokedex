@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'pokeinfo.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -42,10 +44,25 @@ class PokeList extends StatefulWidget {
 
 class _PokeListState extends State<PokeList> {
   Future<List<String>> getPokemon() async {
+    String filename = "pokelist.json";
+    Directory dir = await getTemporaryDirectory();
+    File file = File(dir.path + '/' + filename);
+
+    Map response;
+
+    if (file.existsSync()) {
+      final data = file.readAsStringSync();
+      response = json.decode(data);
+
+    } else {
+      final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=898');
+      http.Response request = await http.get(url);
+      response = json.decode(request.body);
+
+      file.writeAsStringSync(request.body,flush: true, mode: FileMode.write);
+    }
+
     List<String> pokemonList = [];
-    final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=898');
-    http.Response request = await http.get(url);
-    Map response = json.decode(request.body);
 
     for (var pokemon in response['results']) {
       String pokemonName = pokemon['name'];
