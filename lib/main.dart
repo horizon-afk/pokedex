@@ -4,8 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'pokeinfo.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Directory dir = await getTemporaryDirectory();
+  Hive.init(dir.path);
   runApp(MyApp());
 }
 
@@ -53,13 +58,12 @@ class _PokeListState extends State<PokeList> {
     if (file.existsSync()) {
       final data = file.readAsStringSync();
       response = json.decode(data);
-
     } else {
       final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=898');
       http.Response request = await http.get(url);
       response = json.decode(request.body);
 
-      file.writeAsStringSync(request.body,flush: true, mode: FileMode.write);
+      file.writeAsStringSync(request.body, flush: true, mode: FileMode.write);
     }
 
     List<String> pokemonList = [];
