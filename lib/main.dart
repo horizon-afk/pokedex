@@ -55,7 +55,6 @@ class _PokeListState extends State<PokeList> {
 
     for (var pokemon in response['results']) {
       String pokemonName = pokemon['name'];
-
       pokemonList.add(pokemonName);
     }
 
@@ -138,7 +137,7 @@ class _PokeListState extends State<PokeList> {
                       },
                       child: ListTile(
                         title: Text(
-                          '#${maindata.indexOf(data[index]) + 1} ${data[index]}',
+                          '#${maindata.indexOf(data[index]) + 1} ${data[index][0].toUpperCase()}${data[index].substring(1)}',
                           textScaleFactor: 1.5,
                           style: TextStyle(color: Colors.black),
                         ),
