@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:arrow_path/arrow_path.dart';
 import 'package:flutter/material.dart';
 
-
+// creates an arrow to be used to show evolution flow
 class ArrowPainter extends CustomPainter {
 
   double length;

@@ -1,3 +1,4 @@
+// pokemon class to store data about tthe pokemon and show it effectively
 class Pokemon {
   final int index;
   final String name;

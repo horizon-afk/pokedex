@@ -26,6 +26,7 @@ class Info extends StatelessWidget {
   void initHive() async {}
 
   Future<Pokemon> getPokeInfo() async {
+    // initialized box tto store data in json format
     Box box = await Hive.openBox("data");
 
     Map pokemon;
@@ -39,6 +40,8 @@ class Info extends StatelessWidget {
       species = data['species'];
       evolution = data['evolution'];
     } else {
+
+      //gettingg the file directly from the API
       final url = "https://pokeapi.co/api/v2/";
 
       final pokemonUrl = Uri.parse('$url/pokemon/$pokemonName');
@@ -54,7 +57,8 @@ class Info extends StatelessWidget {
       final evolutionUrl = Uri.parse(evolutionChain);
       http.Response evolutionRequest = await http.get(evolutionUrl);
       evolution = json.decode(evolutionRequest.body);
-
+      
+      // storing the data from the API in the box for caching
       Map data = {'pokemon': pokemon, 'species': species, 'evolution': evolution};
 
       box.put(pokemonName, data);
@@ -73,7 +77,7 @@ class Info extends StatelessWidget {
 
     List evolutionList() {
       List evolutionList = [];
-
+      // this statement removes all characters except numbers from a string
       int intValue = int.parse(evolution['chain']['species']['url'].substring(42).replaceAll(RegExp('[^0-9]'), ''));
 
       Pokemon first = Pokemon(
@@ -87,6 +91,7 @@ class Info extends StatelessWidget {
       if (second.length != 0) {
         List third = evolution['chain']['evolves_to'][0]['evolves_to'];
 
+        // forr multiple evolutions
         if (second.length > 1) {
           for (int i = 0; i < second.length; i++) {
             intValue = int.parse(second[i]['species']['url'].substring(42).replaceAll(RegExp('[^0-9]'), ''));
@@ -114,6 +119,8 @@ class Info extends StatelessWidget {
             evolutionList.add(branch);
           }
         } else {
+          
+          // for pokemons havving multiple evolutions after the first evoltuion
           if (second[0]['evolves_to'].length > 1) {
             for (int i = 0; i < second[0]['evolves_to'].length; i++) {
               intValue = int.parse(second[0]['species']['url'].substring(42).replaceAll(RegExp('[^0-9]'), ''));
@@ -136,6 +143,8 @@ class Info extends StatelessWidget {
               evolutionList.add([first, secondPokemon, thirdPokemon]);
             }
           } else {
+
+            // for single evolution 
             intValue = int.parse(second[0]['species']['url'].substring(42).replaceAll(RegExp('[^0-9]'), ''));
 
             Pokemon evolved = Pokemon(
@@ -165,7 +174,7 @@ class Info extends StatelessWidget {
 
       return evolutionList;
     }
-
+    // capitalizing the first character of the name
     String name = "${pokemonName[0].toUpperCase()}${pokemonName.substring(1)}";
 
     return Pokemon(
@@ -181,9 +190,12 @@ class Info extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // gets the screen height and width
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
+    //shows basic stats of the pokemon like height, weight, type
     Widget basicStats(int height, int weight, String type) {
       return Container(
         width: screenWidth * 0.85,
@@ -207,7 +219,7 @@ class Info extends StatelessWidget {
         ),
       );
     }
-
+    // returns the pokemon image as a svg file or png file
     Widget pokemonImage(int id, String url) {
       if (id < 650) {
         return SvgPicture.asset('assets/$id.svg');
@@ -216,10 +228,12 @@ class Info extends StatelessWidget {
       }
     }
 
+    //caches the svg files for faster loading
     Future<void> cacheSvgPicture(String image) async {
       await precachePicture(ExactAssetPicture(SvgPicture.svgStringDecoder, image), context);
     }
 
+    // draws an arrrow off a certain length
     Widget arrow(double length) {
       return Container(
         height: 15,
@@ -230,6 +244,7 @@ class Info extends StatelessWidget {
       );
     }
 
+    ///shows the evolution flow of the pokemon. Supports multiple evolution and no evolution and tapping on the pokemon
     Widget evolution(List evolution) {
       int length = evolution.length;
       int pos = 1;
@@ -280,12 +295,15 @@ class Info extends StatelessWidget {
         evolutionFlow = Column(children: evolutionBtns);
 
         return evolutionFlow;
+
+      // when no multiple evolution is found, an exception is thrown which indicates single evolution flow
       } on NoSuchMethodError {
         for (int i = 0; i < length; i++) {
           if (pos % 2 != 0) {
             Widget evolutionBtn = Container(
                 child: InkWell(
                     onTap: () {
+                      // if a pokemon doesn't support evoultion,the length is 1 and tapping will have no function
                       if (length > 1) {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => PokeInfo(evolution[i].name)));
                       }
@@ -321,6 +339,7 @@ class Info extends StatelessWidget {
       return evolutionFlow;
     }
 
+    // the main screen
     return Scaffold(
         body: SingleChildScrollView(
       child: Container(
@@ -335,6 +354,7 @@ class Info extends StatelessWidget {
                     cacheSvgPicture('assets/${pokemon.index}.svg');
                   }
 
+                  // formats the description of the pokemon in a better readable format
                   List<String> description = pokemon.description.split("");
                   for (int i = 0; i < pokemon.description.length; i++) {
                     if (pokemon.description[i] == "\n" || pokemon.description[i] == "") {
@@ -345,6 +365,8 @@ class Info extends StatelessWidget {
 
                   return Container(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+
+                    // pokemon image with name and index
                     Container(
                         height: screenHeight * 0.150,
                         width: screenHeight * 0.150,
@@ -355,13 +377,19 @@ class Info extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textScaleFactor: 2,
                     ),
+
+                    // basic stats
                     Align(child: basicStats(pokemon.height, pokemon.weight, pokemon.type)),
+
+                    // pokemon description
                     Container(
                         child: Text(
                       "${pokemon.description}",
                       textAlign: TextAlign.center,
                       textScaleFactor: 1.5,
                     )),
+
+                    // divider line which divides the description from evolution
                     Container(
                         margin: EdgeInsets.symmetric(vertical: 20),
                         child: Divider(
@@ -377,11 +405,15 @@ class Info extends StatelessWidget {
                           textAlign: TextAlign.center,
                           textScaleFactor: 1.5,
                         )),
+
+                    // pokemon evolution flow
                     Container(
                       margin: EdgeInsets.only(top: 10, left: 10, right: 10),
                       child: evolution(pokemon.evolution),
                     )
                   ]));
+
+                  // circular progress indicator when data is loading
                 } else {
                   return Container(height: screenHeight * 0.84, child: Center(child: CircularProgressIndicator()));
                 }

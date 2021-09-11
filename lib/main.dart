@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
+  // intializes hive for caching
   WidgetsFlutterBinding.ensureInitialized();
   Directory dir = await getTemporaryDirectory();
   Hive.init(dir.path);
@@ -34,6 +35,8 @@ class PokeList extends StatefulWidget {
 
 class _PokeListState extends State<PokeList> {
   Future<List<String>> getPokemon() async {
+
+    //getting the temporary directory to cache data
     String filename = "pokelist.json";
     Directory dir = await getTemporaryDirectory();
     File file = File(dir.path + '/' + filename);
@@ -44,6 +47,7 @@ class _PokeListState extends State<PokeList> {
       final data = file.readAsStringSync();
       response = json.decode(data);
     } else {
+      //gets the names of differrent pokemons and stores them on a list
       final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=898');
       http.Response request = await http.get(url);
       response = json.decode(request.body);
@@ -106,6 +110,7 @@ class _PokeListState extends State<PokeList> {
   bool searching = false;
   List<String> filteredList = [];
 
+  // this list returns the pokemon with appropriate search keyword
   void searchFilter(String query, List<String> pokemon) {
     for (int i = 0; i < 898; i++) {
       if (pokemon[i].startsWith(query)) {
